@@ -1,10 +1,10 @@
 :export {
   menuText: #ffffff;
   menuActiveText: #409EFF;
-  subMenuActiveText: #f4f4f5;
+  subMenuActiveText: #5283b3;
   menuBg: transparent;
   menuHover: #ffffff;
-  subMenuBg: #1f2d3d;
+  subMenuBg: #fff;
   subMenuHover: #001528;
   sideBarWidth: 210px;
 }
@@ -69,10 +69,32 @@
   margin-left: -2px;
 }
 
-#app .sidebar-container .el-menu {
+#app .sidebar-container .el-menu .el-submenu {
   border: none;
   height: 100%;
   width: 100% !important;
+}
+
+#app .sidebar-container .el-menu .el-submenu a li .svg-icon {
+  color: #3A71A8;
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+#app .sidebar-container .el-menu .el-submenu a li .svg-icon .icon {
+  color: #fff;
+}
+
+#app .sidebar-container .el-menu .el-submenu a li span {
+  color: #3A71A8;
+}
+
+#app .sidebar-container .el-menu .el-submenu a li:hover .svg-icon {
+  color: #43a7fe;
+}
+
+#app .sidebar-container .el-menu .el-submenu a li:hover span {
+  color: #43a7fe;
 }
 
 #app .sidebar-container .submenu-title-noDropdown,
@@ -86,13 +108,13 @@
 }
 
 #app .sidebar-container .is-active > .el-submenu__title {
-  color: #f4f4f5 !important;
+  color: #5283b3 !important;
 }
 
 #app .sidebar-container .nest-menu .el-submenu > .el-submenu__title,
 #app .sidebar-container .el-submenu .el-menu-item {
   min-width: 210px !important;
-  background-color: #1f2d3d !important;
+  background-color: #fff !important;
 }
 
 #app .sidebar-container .nest-menu .el-submenu > .el-submenu__title:hover,

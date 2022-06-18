@@ -1,3 +1,10 @@
+/*
+ * @Author: Yang
+ * @Date: 2022-06-18 12:19:35
+ * @LastEditors: Yang
+ * @LastEditTime: 2022-06-18 16:57:41
+ * @Description: file content
+ */
 import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
@@ -28,6 +35,14 @@ if (process.env.NODE_ENV === 'production') {
   mockXHR()
 }
 
+import * as directives from '@/directives'
+
+// 注册自定义指令 ( 遍历所有导出的指令对象 完成自定义全局注册 )
+Object.keys(directives).forEach((key) => {
+  // 注册自定义指令
+  Vue.directive(key, directives[key])
+})
+
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
@@ -39,5 +54,5 @@ new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App)
 })

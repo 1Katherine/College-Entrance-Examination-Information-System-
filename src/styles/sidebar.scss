@@ -64,10 +64,34 @@
       margin-left: -2px;
     }
 
-    .el-menu {
+    // 设置侧边栏菜单选中样式 
+    .el-menu .el-submenu {
       border: none;
       height: 100%;
       width: 100% !important;
+      a { 
+        li {
+          .svg-icon {
+            color: #3A71A8;
+            font-size: 18px;
+            vertical-align: middle;
+            .icon {
+              color: #fff;
+            }
+          }
+          span {
+            color: #3A71A8;
+          }
+          &:hover {
+            .svg-icon {
+              color:#43a7fe;
+            }
+            span {
+              color: #43a7fe;
+            }
+          }
+        }
+      }
     }
 
     // menu hover
