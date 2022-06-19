@@ -1,6 +1,13 @@
+<!--
+ * @Author: Yang
+ * @Date: 2022-06-18 12:19:35
+ * @LastEditors: Yang
+ * @LastEditTime: 2022-06-18 23:33:15
+ * @Description: file content
+-->
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <div class="dashboard-text">name: {{ name }} 后台管理系统</div>
   </div>
 </template>
 
@@ -13,6 +20,9 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  methods: {
+
   }
 }
 </script>

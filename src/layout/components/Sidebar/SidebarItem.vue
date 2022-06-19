@@ -1,3 +1,10 @@
+<!--
+ * @Author: Yang
+ * @Date: 2022-06-18 12:19:35
+ * @LastEditors: Yang
+ * @LastEditTime: 2022-06-18 17:50:56
+ * @Description: file content
+-->
 <template>
   <div v-if="!item.hidden">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
@@ -8,6 +15,7 @@
       </app-link>
     </template>
 
+<!-- 二级路由 -->
     <el-submenu v-else ref="subMenu" :index="resolvePath(item.path)" popper-append-to-body>
       <template slot="title">
         <item v-if="item.meta" :icon="item.meta && item.meta.icon" :title="item.meta.title" />

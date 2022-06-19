@@ -10,6 +10,9 @@
     >
       <div class="title-container">
         <h3 class="title">登录</h3>
+        <div class="tips-top">
+          <span> 后台管理系统 </span>
+        </div>
       </div>
 
       <el-form-item prop="username">
@@ -55,7 +58,8 @@
         type="primary"
         style="width: 100%; margin-bottom: 30px"
         @click.native.prevent="handleLogin"
-      >Login</el-button>
+        >Login</el-button
+      >
 
       <!-- 底部提示框：默认的账号和密码 -->
       <div class="tips">
@@ -110,7 +114,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
@@ -231,6 +235,13 @@ $light_gray: #eee;
     padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
+  }
+
+  .tips-top {
+    font-size: 14px;
+    color: rgba(194, 186, 186, 0.973);
+    margin-bottom: 10px;
+    text-align: center;
   }
 
   .tips {

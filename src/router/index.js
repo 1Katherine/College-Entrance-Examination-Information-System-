@@ -2,7 +2,7 @@
  * @Author: Yang
  * @Date: 2022-06-18 12:19:35
  * @LastEditors: Yang
- * @LastEditTime: 2022-06-18 17:42:18
+ * @LastEditTime: 2022-06-18 23:27:37
  * @Description: file content
  */
 import Vue from 'vue'
@@ -56,7 +56,6 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
