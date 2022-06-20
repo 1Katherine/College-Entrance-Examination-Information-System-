@@ -30,6 +30,9 @@ export default {
 </script>
 
 <style lang="scss">
+.el-card {
+  width: 100%;
+}
 .page-tools {
   margin: 10px 0;
   .before {
