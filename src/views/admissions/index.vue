@@ -12,13 +12,21 @@
       <page-tools :show-before="true">
         <span slot="before">共n条记录 </span>
         <template slot="after">
-          <el-button size="small" type="warning">导入</el-button>
-          <el-button size="small" type="danger">导出</el-button>
+          <el-button
+            size="small"
+            type="warning"
+            @click="$router.push('/import')"
+          >导入</el-button>
+          <el-button
+            size="small"
+            type="danger"
+            @click="exportData"
+          >导出</el-button>
           <!-- 新增学校信息按钮 -->
           <el-button
             size="small"
             type="primary"
-            @click="dialogVisible = true"
+            @click="showDialog = true"
           >新增招生信息</el-button>
         </template>
       </page-tools>
@@ -54,63 +62,22 @@
         <el-pagination layout="prev, pager, next" :total="1000" />
       </el-row>
 
-      <!-- 新增招生信息的弹框表单页面 -->
-      <el-dialog
-        title="新增学校招生信息"
-        :visible.sync="dialogVisible"
-        :before-close="btnCancel"
-      >
-        <el-form label-width="120px" style="margin-top: 10px">
-          <el-form-item label="学校名称">
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="所属省份">
-            <el-input style="width: 202px" />
-          </el-form-item>
-          <el-form-item label="招生专业">
-            <el-input style="width: 202px" />
-          </el-form-item>
-          <el-form-item label="招生人数">
-            <el-input style="width: 202px" />
-          </el-form-item>
-          <el-form-item label="招生类型">
-            <el-input style="width: 202px" />
-          </el-form-item>
-          <el-form-item label="招生批次">
-            <el-input style="width: 202px" />
-          </el-form-item>
-          <el-form-item label="是否有强基计划">
-            <el-input style="width: 202px" />
-          </el-form-item>
-        </el-form>
-        <!-- 弹框底部 -->
-        <el-row type="flex" justify="center">
-          <el-col :span="4">
-            <el-button size="small" @click="btnCancel">取消</el-button>
-          </el-col>
-          <el-col :span="2">
-            <el-button
-              size="small"
-              type="primary"
-              @click="btnOk"
-            >确定</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
+      <!-- 新增招生信息的弹框组件 -->
+      <add-admission
+        :show-dialog.sync="showDialog"
+        @cancelDialog="cancelDialog"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import AddAdmission from './add-admission.vue'
 export default {
   name: 'SchoolAdmission',
+  components: {
+    AddAdmission
+  },
   data() {
     return {
       // 表格数据
@@ -156,56 +123,52 @@ export default {
           qjjh: '有'
         }
       ],
-      // 对话框中selector选择器的数据
-      options: [
-        {
-          value: '选项1',
-          label: '黄金糕'
-        },
-        {
-          value: '选项2',
-          label: '双皮奶'
-        },
-        {
-          value: '选项3',
-          label: '蚵仔煎'
-        },
-        {
-          value: '选项4',
-          label: '龙须面'
-        },
-        {
-          value: '选项5',
-          label: '北京烤鸭'
-        }
-      ],
-      value: '', // seletor框中最初显示的内容
-      dialogVisible: false // 新增招生信息弹出框是否显示
+
+      showDialog: false // 新增招生信息弹出框是否显示
     }
   },
   methods: {
-    // 关闭新增学校招生信息的弹框
-    btnCancel() {
-      this.dialogVisible = false // 关闭弹窗
-    },
-    btnOk() {
-      this.dialogVisible = false // 关闭弹窗
-    },
     handleClick(row) {
       console.log(row) // 点击编辑按钮，获取当前行的数据
     },
     handleDelete(row) {
       console.log(row)
+    },
+    cancelDialog(value) {
+      this.showDialog = value
+    },
+    // 导出表格方法
+    exportData() {
+      // 表头对应关系
+      const headers = {
+        学校名: 'name',
+        所属省份: 'province',
+        招生专业: 'major',
+        招生年份: 'year',
+        招生人数: 'zsrs',
+        招生类型: 'zslx',
+        招生批次: 'zspc',
+        是否有强基计划: 'qjjh'
+      }
+      // var myheaders = Object.keys(this.datalist[0])
+      var mydata = []
+      for (var i = 0; i < this.datalist.length; i++) {
+        mydata.push(Object.values(this.datalist[i]))
+      }
+      console.log(mydata)
+      // 懒加载
+      import('@/vendor/Export2Excel').then((excel) => {
+        excel.export_json_to_excel({
+          header: Object.keys(headers),
+          data: mydata,
+          filename: '学校招生信息表',
+          autoWidth: true,
+          bookType: 'xlsx'
+        })
+      })
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.el-select {
-  width: 300px !important;
-}
-.el-input {
-  width: 300px !important;
-}
-</style>
+<style lang="scss" scoped></style>

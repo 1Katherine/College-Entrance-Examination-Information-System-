@@ -69,7 +69,16 @@ export const constantRoutes = [
       }
     ]
   },
-
+  // excel导入的路由
+  {
+    path: '/import',
+    component: Layout,
+    hidden: true, // 在左侧栏中隐藏
+    children: [{
+      path: '',
+      component: () => import('@/views/import')
+    }]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
