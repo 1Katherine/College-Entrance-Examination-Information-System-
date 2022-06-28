@@ -1,9 +1,5 @@
 <template>
-  <el-dialog
-    title="新增学校信息"
-    :visible="showDialog"
-    :before-close="btnCancel"
-  >
+  <el-dialog :title="titleName" :visible="showDialog" :before-close="btnCancel">
     <el-form
       ref="form"
       style="overflow-y: auto; height: 485px; margin-top: 10px"
@@ -105,10 +101,10 @@ export default {
       type: Boolean,
       default: false
     },
-    formData: {
-      type: Object,
-      default: null
-    }
+    titleName: {
+      type: String,
+      default: ''
+    },
   },
   data() {
     return {
@@ -168,8 +164,10 @@ export default {
         await this.$refs.form.validate() // 表单校验通过才会继续往下执行，否则跳到catch
         if (this.form.id) {
           // 编辑数据业务
+          // await 更新数据接口(id)
         } else {
           // 新增数据业务
+          // await 新增接口(this.form)
         }
         // 重新获取所有数据
         this.$message.success('保存成功')

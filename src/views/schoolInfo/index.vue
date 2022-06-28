@@ -2,7 +2,7 @@
  * @Author: Yang
  * @Date: 2022-06-18 17:31:12
  * @LastEditors: Yang
- * @LastEditTime: 2022-06-18 22:45:34
+ * @LastEditTime: 2022-06-28 15:05:20
  * @Description: file content
 -->
 <template>
@@ -12,62 +12,70 @@
       <page-tools :show-before="true">
         <template slot="before">
           <!-- 新增学校信息按钮 -->
-          <el-button
-            type="primary"
-            @click="showDialog = true"
-          >新增学校信息</el-button>
+          <el-button type="primary" @click="handleClick"
+            >新增学校信息</el-button
+          >
         </template>
         <template slot="after">
-          <el-button
-            type="warning"
-            @click="$router.push('/import')"
-          >导入</el-button>
+          <el-button type="warning" @click="$router.push('/import')"
+            >导入</el-button
+          >
           <el-button type="danger" @click="exportData">导出</el-button>
         </template>
       </page-tools>
       <!-- 信息显示表格 -->
-      <el-table :data="datalist" style="width: 100%" stripe border>
-        <el-table-column fixed="" type="index" label="序号" width="100" />
-        <el-table-column prop="school_id" label="学校编号" width="140" />
-        <el-table-column label="学校名" width="140">
-          <template slot-scope="scope">
-            <el-tag size="medium">{{ scope.row.school_name }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="school_level" label="等级" width="100" />
-        <el-table-column prop="school_type" label="类型" width="140" />
-        <el-table-column prop="school_nature" label="办学性质" width="140" />
-        <el-table-column prop="school_region" label="区域" width="100" />
-        <el-table-column prop="school_province" label="省份" width="100" />
-        <el-table-column prop="school_city" label="城市" width="100" />
-        <el-table-column prop="school_belong" label="隶属单位" width="100" />
-        <el-table-column prop="school_rk" label="最新软科排名" width="80" />
-        <el-table-column prop="school_wsl" label="最新校友会排名" width="80" />
-        <el-table-column prop="school_xyh" label="最新武书连排名" width="80" />
-        <el-table-column prop="school_qs" label="最新QS排名" width="80" />
-        <el-table-column prop="school_us" label="最新US排名" width="80" />
-        <el-table-column prop="school_tws" label="最新泰晤士排名" width="80" />
-        <el-table-column
-          prop="school_requirments"
-          label="报考要求"
-          width="140"
-        />
-        <el-table-column width="200px" label="操作">
-          <!-- 通过作用域插槽，通过点击行，获得父组件行的数据 -->
-          <template slot-scope="{ row }">
-            <el-button
-              size="small"
-              type="primary"
-              @click="handleClick(row)"
-            >编辑</el-button>
-            <el-button
-              size="small"
-              type="danger"
-              @click="handleDelete(row)"
-            >删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <el-card>
+        <el-table :data="datalist" style="width: 100%" stripe border>
+          <el-table-column fixed="" type="index" label="序号" width="100" />
+          <el-table-column prop="school_id" label="学校编号" width="140" />
+          <el-table-column label="学校名" width="140">
+            <template slot-scope="scope">
+              <el-tag size="medium">{{ scope.row.school_name }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="school_level" label="等级" width="100" />
+          <el-table-column prop="school_type" label="类型" width="140" />
+          <el-table-column prop="school_nature" label="办学性质" width="140" />
+          <el-table-column prop="school_region" label="区域" width="100" />
+          <el-table-column prop="school_province" label="省份" width="100" />
+          <el-table-column prop="school_city" label="城市" width="100" />
+          <el-table-column prop="school_belong" label="隶属单位" width="100" />
+          <el-table-column prop="school_rk" label="最新软科排名" width="80" />
+          <el-table-column
+            prop="school_wsl"
+            label="最新校友会排名"
+            width="80"
+          />
+          <el-table-column
+            prop="school_xyh"
+            label="最新武书连排名"
+            width="80"
+          />
+          <el-table-column prop="school_qs" label="最新QS排名" width="80" />
+          <el-table-column prop="school_us" label="最新US排名" width="80" />
+          <el-table-column
+            prop="school_tws"
+            label="最新泰晤士排名"
+            width="80"
+          />
+          <el-table-column
+            prop="school_requirments"
+            label="报考要求"
+            width="140"
+          />
+          <el-table-column width="200px" label="操作">
+            <!-- 通过作用域插槽，通过点击行，获得父组件行的数据 -->
+            <template slot-scope="{ row }">
+              <el-button size="small" type="primary" @click="handleClick(row)"
+                >编辑</el-button
+              >
+              <el-button size="small" type="danger" @click="handleDelete(row)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
       <!-- 分页组件 -->
       <el-row justify="center" type="flex" align="middle" style="height: 60px">
         <el-pagination
@@ -82,7 +90,7 @@
       <!-- 新增招生信息的弹框组件 -->
       <add-school-info
         :show-dialog.sync="showDialog"
-        :form-data="formData"
+        :title-name="titleName"
         @cancelDialog="cancelDialog"
       />
     </div>
@@ -169,23 +177,38 @@ export default {
         size: 10, // 每一页放的数据个数
         total: 0 // 数据总数，需要在所有数据挂载完毕后才能在mounted中计算数据总数，
       },
-      formData: {},
-      showDialog: false // 新增招生信息弹出框是否显示
+      titleName: '新增',
+      showDialog: false, // 新增招生信息弹出框是否显示
+
     }
   },
-  mounted() {
-    this.page.total = tableList.length // 修改分页组件的总数居数量
-    this.datalist = tableList.slice(0, this.page.size) // 为表格附上第一页的数据
+  created() {
+    this.getSchoolList() // 获取所有数据
   },
   methods: {
+    // getSchoolList() { // 根据页码获取当前所有数据
+    //   const { total, rows } = await getEmployeeList(this.page)
+    //   this.page.total = total
+    //   this.datalist = rows
+    // }
+    getSchoolList() { // 根据页码获取当前所有数据
+      this.page.total = tableList.length // 修改分页组件的总数居数量
+      this.datalist = tableList.slice((this.page.page - 1) * this.page.size,
+        this.page.page * this.page.size) // 为表格附上第一页的数据
+    },
     handleClick(row) {
       this.showDialog = true // 弹出新增数据对话框
-      // 父传子（把这一行数据传递给add组件进行回显）
-      this.formData = row
-      console.log(row) // 点击编辑按钮，获取当前行的数据
+      if (row.school_name) {
+        this.titleName = '编辑学校信息'
+
+      } else {
+        this.titleName = '新增学校信息'
+      }
+      // 把学校id传递给子组件，子组件调用查询按钮，查询出该学校的所有数据，用于数据回显
+      // console.log(row) // 点击编辑按钮，获取当前行的数据
     },
     handleDelete(row) {
-      console.log(row)
+      // console.log(row)
     },
     // 关闭新增数据窗口
     cancelDialog(value) {
