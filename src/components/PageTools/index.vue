@@ -3,7 +3,7 @@
     <el-row type="flex" justify="space-between" align="middle">
       <el-col>
         <div v-if="showBefore" class="before">
-          <i class="el-icon-info" />
+          <!-- <i class="el-icon-info" /> -->
           <!-- 定义前面的插槽 -->
           <slot name="before" />
         </div>

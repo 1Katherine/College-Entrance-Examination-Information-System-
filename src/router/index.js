@@ -14,10 +14,17 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 // 引入动态路由
-import admissions from './modules/admission'
+import subjectAdmissions from './modules/subjectAdmissions'
+import typeAdmissions from './modules/typeAdmissions'
+import schoolInfo from './modules/schoolnfo'
+import typeInfo from './modules/typeInfo'
+import subjectInfo from './modules/subjectInfo'
+import subjectScore from './modules/subjectScore'
+import typeScore from './modules/typeScore'
 
 // 动态路由
-export const asyncRoutes = [admissions]
+export const asyncRoutes = [schoolInfo,
+  typeInfo, subjectInfo, subjectAdmissions, typeAdmissions, subjectScore, typeScore]
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
