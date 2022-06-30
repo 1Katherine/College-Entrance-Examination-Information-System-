@@ -6,7 +6,7 @@
   >
     <el-form label-width="150px" style="margin-top: 10px">
       <el-form-item label="学校名称">
-        <el-select v-model="value" placeholder="请选择">
+        <el-select v-model="form.name" placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -16,22 +16,22 @@
         </el-select>
       </el-form-item>
       <el-form-item label="所属省份">
-        <el-input style="width: 202px" />
+        <el-input v-model="form.province" style="width: 202px" />
       </el-form-item>
       <el-form-item label="招生专业">
-        <el-input style="width: 202px" />
+        <el-input v-model="form.major" style="width: 202px" />
       </el-form-item>
       <el-form-item label="招生人数">
-        <el-input style="width: 202px" />
+        <el-input v-model="form.zsrs" style="width: 202px" />
       </el-form-item>
       <el-form-item label="招生类型">
-        <el-input style="width: 202px" />
+        <el-input v-model="form.zslx" style="width: 202px" />
       </el-form-item>
       <el-form-item label="招生批次">
-        <el-input style="width: 202px" />
+        <el-input v-model="form.zspc" style="width: 202px" />
       </el-form-item>
       <el-form-item label="是否有强基计划">
-        <el-input style="width: 202px" />
+        <el-input v-model="form.qjjh" style="width: 202px" />
       </el-form-item>
     </el-form>
     <!-- 弹框底部 -->
@@ -53,6 +53,10 @@ export default {
     showDialog: {
       type: Boolean,
       default: false
+    },
+    form: {
+      type: Object,
+      default: null
     }
   },
   data() {

@@ -21,10 +21,13 @@ import typeInfo from './modules/typeInfo'
 import subjectInfo from './modules/subjectInfo'
 import subjectScore from './modules/subjectScore'
 import typeScore from './modules/typeScore'
+import userInfo from './modules/userInfo'
 
 // 动态路由
 export const asyncRoutes = [schoolInfo,
-  typeInfo, subjectInfo, subjectAdmissions, typeAdmissions, subjectScore, typeScore]
+  typeInfo, subjectInfo, subjectAdmissions,
+  typeAdmissions, subjectScore, typeScore,
+  userInfo]
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html

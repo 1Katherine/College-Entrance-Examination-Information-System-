@@ -12,27 +12,65 @@
       <page-tools :show-before="true">
         <template slot="before">
           <!-- 新增学校信息按钮 -->
-          <el-button type="primary" @click="handleClick"
-            >新增学校信息</el-button
-          >
+          <el-button
+            type="primary"
+            @click="handleClick"
+          >新增学校信息</el-button>
         </template>
         <template slot="after">
-          <el-button type="warning" @click="$router.push('/import')"
-            >导入</el-button
-          >
+          <el-button
+            type="warning"
+            @click="$router.push('/import')"
+          >导入</el-button>
           <el-button type="danger" @click="exportData">导出</el-button>
         </template>
       </page-tools>
+
+      <!-- 搜索框div -->
+      <div class="search">
+        <el-select v-model="searchData.school_region" placeholder="请选择区域" clearable @change="changeRegion">
+          <el-option
+            v-for="item in regions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          /></el-select>
+        <el-select v-model="searchData.school_province" placeholder="请选择省份" clearable @change="changeProvince" @focus="provinceFocus">
+          <el-option
+            v-for="item in province"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          /></el-select>
+        <el-select v-model="searchData.school_city" placeholder="请选择城市" clearable @focus="cityFocus">
+          <el-option
+            v-for="item in city"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          /></el-select>
+        <el-select v-model="searchData.school_level" placeholder="请选择学校等级" clearable>
+          <el-option
+            v-for="item in level"
+            :key="item"
+            :label="item"
+            :value="item"
+          /></el-select>
+        <el-button type="primary" icon="el-icon-search">搜索</el-button>
+        <el-button icon="el-icon-refresh-right" @click="refesh">重置</el-button>
+      </div>
+
       <!-- 信息显示表格 -->
       <el-card>
         <el-table :data="datalist" style="width: 100%" stripe border>
-          <el-table-column fixed="" type="index" label="序号" width="100" />
-          <el-table-column prop="school_id" label="学校编号" width="140" />
-          <el-table-column label="学校名" width="140">
+          <el-table-column prop="school_code" label="学校编号" width="100" />
+          <el-table-column prop="school_id" label="学校id" width="140" />
+          <!-- <el-table-column label="学校名" width="140">
             <template slot-scope="scope">
               <el-tag size="medium">{{ scope.row.school_name }}</el-tag>
             </template>
-          </el-table-column>
+          </el-table-column> -->
+          <el-table-column prop="school_name" label="学校名" width="140" />
           <el-table-column prop="school_level" label="等级" width="100" />
           <el-table-column prop="school_type" label="类型" width="140" />
           <el-table-column prop="school_nature" label="办学性质" width="140" />
@@ -66,12 +104,16 @@
           <el-table-column width="200px" label="操作">
             <!-- 通过作用域插槽，通过点击行，获得父组件行的数据 -->
             <template slot-scope="{ row }">
-              <el-button size="small" type="primary" @click="handleClick(row)"
-                >编辑</el-button
-              >
-              <el-button size="small" type="danger" @click="handleDelete(row)"
-                >删除</el-button
-              >
+              <el-button
+                size="small"
+                type="primary"
+                @click="handleClick(row)"
+              >编辑</el-button>
+              <el-button
+                size="small"
+                type="danger"
+                @click="handleDelete(row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -79,8 +121,8 @@
       <!-- 分页组件 -->
       <el-row justify="center" type="flex" align="middle" style="height: 60px">
         <el-pagination
-          :current-page="page.page"
-          :page-size="page.size"
+          :current-page="page.currentPage"
+          :page-size="page.pageSize"
           layout="prev, pager, next"
           :total="page.total"
           @current-change="handleCurrentChange"
@@ -91,6 +133,8 @@
       <add-school-info
         :show-dialog.sync="showDialog"
         :title-name="titleName"
+        :form="form"
+        @submitSchoolInfo="submitSchoolInfo"
         @cancelDialog="cancelDialog"
       />
     </div>
@@ -99,69 +143,10 @@
 
 <script>
 import AddSchoolInfo from './add-schoolInfo.vue'
-var data = {
-  school_id: '10074',
-  school_name: '华中科技大学',
-  school_level: 'B',
-  school_type: '本科一批',
-  school_nature: '本科',
-  school_region: '中部',
-  school_province: '湖北',
-  school_city: '武汉',
-  school_211: 1,
-  school_985: 1,
-  school_belong: '湖北省',
-  school_rk: 8,
-  school_xyh: 12,
-  school_wsl: 22,
-  school_qs: 69,
-  school_us: 178,
-  school_tws: 7,
-  school_requirments: '报考要求'
-}
-var data1 = {
-  school_id: '20046',
-  school_name: '武汉大学',
-  school_level: 'B',
-  school_type: '本科一批',
-  school_nature: '本科',
-  school_region: '中部',
-  school_province: '湖北',
-  school_city: '武汉',
-  school_211: 1,
-  school_985: 1,
-  school_belong: '湖北省',
-  school_rk: 9,
-  school_xyh: 10,
-  school_wsl: 80,
-  school_qs: 99,
-  school_us: 237,
-  school_tws: 6,
-  school_requirments: '报考要求'
-}
-var tableList = [
-  data,
-  data1,
-  data,
-  data1,
-  data,
-  data1,
-  data,
-  data1,
-  data,
-  data1,
-  data,
-  data1,
-  data,
-  data1,
-  data,
-  data1,
-  data1,
-  data,
-  data1,
-  data,
-  data1
-]
+import { getSchoolList } from '@/api/school'
+import { getAllRegions } from '@/api/region'
+import { getProvinceByRegion } from '@/api/province'
+import { getCityByProvince } from '@/api/city'
 export default {
   name: 'SchoolInfo',
   components: {
@@ -173,58 +158,150 @@ export default {
       datalist: [],
       // 分页相关数据
       page: {
-        page: 1, // 当前页数
-        size: 10, // 每一页放的数据个数
+        currentPage: 1, // 当前页数
+        pageSize: 5, // 每一页放的数据个数
         total: 0 // 数据总数，需要在所有数据挂载完毕后才能在mounted中计算数据总数，
       },
       titleName: '新增',
       showDialog: false, // 新增招生信息弹出框是否显示
-
+      regions: [], // 根据区域信息表得到的所有区域
+      province: [], // 根据省份信息表得到的所有省份
+      city: [], // 根据城市信息表得到的所有城市
+      level: ['211', '985', '其他'], // 固定为211，985和其他
+      searchData: {
+        school_region: '',
+        school_province: '',
+        school_city: '',
+        school_level: '',
+        school_type: '',
+        school_nature: '',
+        school_211or985: '',
+        school_belong: ''
+      },
+      // 传递给子组件的数据（新增学校表单和编辑学校表单
+      form: {}
     }
   },
-  created() {
-    this.getSchoolList() // 获取所有数据
+  async created() {
+    await this.getSchoolList() // 获取所有数据
+    await this.getAllRegions() // 获取地理位置
   },
   methods: {
-    // getSchoolList() { // 根据页码获取当前所有数据
-    //   const { total, rows } = await getEmployeeList(this.page)
-    //   this.page.total = total
-    //   this.datalist = rows
-    // }
-    getSchoolList() { // 根据页码获取当前所有数据
-      this.page.total = tableList.length // 修改分页组件的总数居数量
-      this.datalist = tableList.slice((this.page.page - 1) * this.page.size,
-        this.page.page * this.page.size) // 为表格附上第一页的数据
+    // 获取地理位置（区域、省份、城市）
+    async getAllRegions() {
+      const { data } = await getAllRegions(this.page)
+      const regionsObj = data.data
+      const regionsArr = []
+      regionsObj.map(function(item, index, array) {
+        const r = { 'value': item['region_code'],
+          'label': item['region_name']
+        }
+        regionsArr.push(r)
+      })
+      this.regions = regionsArr
+    },
+    async provinceFocus() {
+      const rid = this.searchData.school_region
+      if (rid === '') {
+        this.$message.warning('请先选择区域，再选择省份')
+      } else {
+        try {
+          const { data } = await getProvinceByRegion(rid)
+          const provinceObj = data.data
+          const provinceArr = []
+          provinceObj.map(function(item, index, array) {
+            const pro = { 'value': item['province_code'],
+              'label': item['province_name']
+            }
+            provinceArr.push(pro)
+          })
+          this.province = provinceArr
+        } catch (error) {
+          this.$message.warning(error)
+        }
+      }
+    },
+    async cityFocus() {
+      const pid = this.searchData.school_province
+      console.log('pid', pid)
+      if (pid === '') {
+        this.$message.warning('请先选择省份，再选择城市')
+      } else {
+        try {
+          const { data } = await getCityByProvince(pid)
+          const cityObj = data.data
+          const cityArr = []
+          cityObj.map(function(item, index, array) {
+            const city = { 'value': item['city_code'],
+              'label': item['city_name']
+            }
+            cityArr.push(city)
+          })
+          this.city = cityArr
+        } catch (error) {
+          this.$message.warning(error)
+        }
+      }
+    },
+    changeRegion() {
+      this.searchData.school_province = ''
+      this.searchData.school_city = ''
+      this.searchData.school_211or985 = ''
+    },
+    changeProvince() {
+      this.searchData.school_city = ''
+      this.searchData.school_211or985 = ''
+    },
+    async getSchoolList() { // 根据页码获取当前所有数据
+      const { data } = await getSchoolList(this.page)
+      this.page.total = data.data.total
+      this.datalist = data.data.records
     },
     handleClick(row) {
-      this.showDialog = true // 弹出新增数据对话框
+      console.log(row.school_name)
+
       if (row.school_name) {
         this.titleName = '编辑学校信息'
-
+        this.form = JSON.parse(JSON.stringify(row)) // 深拷贝，避免form变化时导致row也变化
       } else {
         this.titleName = '新增学校信息'
       }
+      this.showDialog = true
       // 把学校id传递给子组件，子组件调用查询按钮，查询出该学校的所有数据，用于数据回显
       // console.log(row) // 点击编辑按钮，获取当前行的数据
     },
+    submitSchoolInfo(value) {
+      if (value.type === 'add') {
+        console.log('add')
+        console.log(value.data)
+      } else {
+        // value.type === 'edit'
+        console.log('edit')
+        console.log(value.data)
+      }
+    },
     handleDelete(row) {
-      // console.log(row)
     },
     // 关闭新增数据窗口
     cancelDialog(value) {
       this.showDialog = value
+      this.form = {} // 关闭form将表单置为空
     },
     handleCurrentChange(newPage) {
-      this.page.page = newPage // 修改当前页
-      this.getPageList() // 获取当前页的数据给datalist
+      this.page.currentPage = newPage // 修改当前页
+      this.getSchoolList() // 获取当前页的数据给datalist
     },
-    // 获取当前页的数据
-    getPageList() {
-      // 取出newPage页的数据给表格数据显示
-      this.datalist = tableList.slice(
-        (this.page.page - 1) * this.page.size,
-        this.page.page * this.page.size
-      )
+    refesh() {
+      this.searchData = {
+        school_region: '',
+        school_province: '',
+        school_city: '',
+        school_level: '',
+        school_type: '',
+        school_nature: '',
+        school_211or985: '',
+        school_belong: ''
+      }
     },
     // 导出表格方法
     exportData() {
@@ -269,4 +346,13 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.search {
+  margin: 0px 0px 10px 0px;
+  display: flex;
+  justify-content: flex-start;
+  .el-select {
+    margin-right: 20px;
+  }
+}
+</style>

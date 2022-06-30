@@ -65,6 +65,7 @@
       <!-- 新增招生信息的弹框组件 -->
       <add-admission
         :show-dialog.sync="showDialog"
+        :form="form"
         @cancelDialog="cancelDialog"
       />
     </div>
@@ -123,13 +124,15 @@ export default {
           qjjh: '有'
         }
       ],
+      form: '', // 传递给编辑表单的数据
 
       showDialog: false // 新增招生信息弹出框是否显示
     }
   },
   methods: {
     handleClick(row) {
-      console.log(row) // 点击编辑按钮，获取当前行的数据
+      this.showDialog = true
+      this.form = row
     },
     handleDelete(row) {
       console.log(row)

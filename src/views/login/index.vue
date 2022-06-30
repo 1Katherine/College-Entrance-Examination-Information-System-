@@ -51,6 +51,12 @@
           />
         </span>
       </el-form-item>
+      <div>
+        <el-checkbox
+          v-model="check"
+          style="padding:6px 5px 6px 15px"
+        >记住密码</el-checkbox>
+      </div>
 
       <el-button
         class="loginBtn"
@@ -62,7 +68,7 @@
 
       <!-- 底部提示框：默认的账号和密码 -->
       <div class="tips">
-        <span style="margin-right: 20px"> 账号: admin </span>
+        <span style="margin-right: 20px"> 账号: 张三 </span>
         <span> 密码: 123456 </span>
       </div>
     </el-form>
@@ -70,19 +76,20 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-
+// import { validUsername } from '@/utils/validate'
+import { login } from '@/api/user'
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      // 在/src/utils/validate中有validUsername方法，定义了校验用户名的方法
-      // 用户名只能是admin 和 editor
-      if (!validUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
-      } else {
-        callback()
-      }
+      // // 在/src/utils/validate中有validUsername方法，定义了校验用户名的方法
+      // // 用户名只能是admin 和 editor
+      // if (!validUsername(value)) {
+      //   callback(new Error('请输入正确的用户名'))
+      // } else {
+      //   callback()
+      // }
+      callback() // 通过校验
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6 || value.length > 16) {
@@ -92,9 +99,10 @@ export default {
       }
     }
     return {
+      check: true, // 忘记密码复选框的状态
       loginForm: {
-        username: 'admin',
-        password: '123456'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [
@@ -131,16 +139,24 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate((isOk) => {
+      this.$refs.loginForm.validate(async(isOk) => {
         if (isOk) {
           try {
             // 校验通过，登录
+            const { data } = await login({
+              username: this.loginForm.username,
+              password: this.loginForm.password
+            })
             this.loading = true // 按钮显示loading
-
-            this.$router.push('/') // 页面跳转
+            console.log(data)
+            if (data.code === 200) {
+              this.$message.success('登录成功')
+              this.$router.push('/') // 页面跳转
+            } else {
+              this.$message.warning('用户名或密码错误')
+            }
           } catch (error) {
             // 登录不通过，弹框
-            console.log(error)
           } finally {
             this.loading = false // 无论是否通过，都关闭loading
           }
@@ -267,6 +283,7 @@ $light_gray: #eee;
   ::v-deep {
     .el-form-item__error {
       color: #fff;
+      padding-left: 5px;
     }
   }
 

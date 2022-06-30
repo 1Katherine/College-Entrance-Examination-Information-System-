@@ -8,7 +8,7 @@
       :model="form"
     >
       <el-form-item label="学校编号" prop="school_code">
-        <el-input v-model="form.school_code" class="input_box" />
+        <el-input v-model="form.school_id" class="input_box" />
       </el-form-item>
       <el-form-item label="学校名称" prop="school_name">
         <el-input v-model="form.school_name" class="input_box" />
@@ -22,17 +22,36 @@
       <el-form-item label="办学性质" prop="school_nature">
         <el-input v-model="form.school_nature" class="input_box" />
       </el-form-item>
-      <el-form-item label="隶属单位" prop="school_belong">
-        <el-input v-model="form.school_belong" class="input_box" />
-      </el-form-item>
+
       <el-form-item label="区域">
-        <el-input v-model="form.school_region" class="input_box" />
+        <el-select v-model="form.school_region" placeholder="请选择" @change="changeRegion" @focus="regionFocus">
+          <el-option
+            v-for="item in region"
+            :key="item.value"
+            :label="item.label"
+            :value="item.label"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="省份">
-        <el-input v-model="form.school_province" class="input_box" />
+        <el-select v-model="form.school_province" class="input_box" @focus="provinceFocus" @change="changeProvince">
+          <el-option
+            v-for="item in province"
+            :key="item.value"
+            :label="item.label"
+            :value="item.label"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="城市">
-        <el-input v-model="form.school_city" class="input_box" />
+        <el-select v-model="form.school_city" class="input_box" @focus="cityFocus">
+          <el-option
+            v-for="item in city"
+            :key="item.value"
+            :label="item.label"
+            :value="item.label"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="是否211">
         <el-select
@@ -54,7 +73,9 @@
           <el-option label="否" value="0" />
         </el-select>
       </el-form-item>
-
+      <el-form-item label="隶属单位" prop="school_belong">
+        <el-input v-model="form.school_belong" class="input_box" />
+      </el-form-item>
       <el-form-item label="最新软科排名">
         <el-input v-model="form.school_rk" class="input_box" />
       </el-form-item>
@@ -75,7 +96,7 @@
       </el-form-item>
       <el-form-item label="报考要求">
         <el-input
-          v-model="form.school_requirements"
+          v-model="form.school_requirments"
           type="textarea"
           class="input_box"
         />
@@ -94,6 +115,9 @@
 </template>
 
 <script>
+import { getAllRegions } from '@/api/region'
+import { getProvinceByRegion } from '@/api/province'
+import { getCityByProvince } from '@/api/city'
 export default {
   props: {
     // 是否显示弹层 (父传子)
@@ -105,15 +129,17 @@ export default {
       type: String,
       default: ''
     },
+    form: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {
-      // 表单数据结构, 用于接收编辑的表单数据，新增表单该数据为空就行
-      form: {},
       // 表单验证
       rules: {
-        school_code: [
-          { required: true, message: '请输入学校编号', trigger: 'blur' }
+        school_id: [
+          { required: true, message: '请输入学校id', trigger: 'blur' }
         ],
         school_name: [
           { required: true, message: '请输入学校名', trigger: 'blur' }
@@ -130,44 +156,88 @@ export default {
         school_belong: [
           { required: true, message: '请输入学校隶属单位', trigger: 'blur' }
         ]
-      }
+      },
+      region: [],
+      province: [],
+      city: []
     }
   },
   methods: {
-    btnCancel() {
-      this.form = {
-        school_code: '', // 学校编号
-        school_id: '', // 学校id
-        school_name: '', // 学校名
-        school_level: '', // 学校等级
-        school_type: '', // 学校类型
-        school_nature: '', // 办学性质
-        school_region: '', // 区域
-        school_province: '', // 省份
-        school_city: '', // 省份
-        school_211: '', // 是否211
-        school_985: '', // 是否985
-        school_belong: '', // 隶属单位
-        school_rk: '', // 最新软科排名
-        school_xyh: '', // 最新校友会排名
-        school_wsl: '', // 最新武书连排名
-        school_qs: '', // 最新QS排名
-        school_us: '', // 最新US排名
-        school_tws: '', // 最新泰晤士排名
-        school_requirements: '' // 报考要求
+    // 获取地理位置（区域、省份、城市）
+    async regionFocus() {
+      const { data } = await getAllRegions(this.page)
+      const regionsObj = data.data
+      const regionsArr = []
+      regionsObj.map(function(item, index, array) {
+        const r = { 'value': item['region_code'],
+          'label': item['region_name']
+        }
+        regionsArr.push(r)
+      })
+      this.region = regionsArr
+    },
+    async provinceFocus() {
+      const rid = this.form.school_region
+      if (rid === '') {
+        this.$message.warning('请先选择区域，再选择省份')
+      } else {
+        try {
+          const { data } = await getProvinceByRegion(rid)
+          const provinceObj = data.data
+          const provinceArr = []
+          provinceObj.map(function(item, index, array) {
+            const pro = { 'value': item['province_code'],
+              'label': item['province_name']
+            }
+            provinceArr.push(pro)
+          })
+          this.province = provinceArr
+        } catch (error) {
+          this.$message.warning(error)
+        }
       }
+    },
+    async cityFocus() {
+      const pid = this.form.school_province
+      console.log('pid', pid)
+      if (pid === '') {
+        this.$message.warning('请先选择省份，再选择城市')
+      } else {
+        try {
+          const { data } = await getCityByProvince(pid)
+          const cityObj = data.data
+          const cityArr = []
+          cityObj.map(function(item, index, array) {
+            const city = { 'value': item['city_code'],
+              'label': item['city_name']
+            }
+            cityArr.push(city)
+          })
+          this.city = cityArr
+        } catch (error) {
+          this.$message.warning(error)
+        }
+      }
+    },
+    changeRegion() {
+      this.form.school_province = ''
+      this.form.school_city = ''
+    },
+    changeProvince() {
+      this.form.school_city = ''
+    },
+    btnCancel() {
       this.$refs.form.resetFields() // 移除校验规则
       this.$emit('cancelDialog', false) // 告诉父节点关闭弹窗
     },
     async onSave() {
       try {
         await this.$refs.form.validate() // 表单校验通过才会继续往下执行，否则跳到catch
-        if (this.form.id) {
-          // 编辑数据业务
-          // await 更新数据接口(id)
+        if (this.titleName === '编辑学校信息') {
+          this.$emit('submitSchoolInfo', { type: 'edit', data: this.form })// 告诉父组件执行编辑接口
         } else {
           // 新增数据业务
-          // await 新增接口(this.form)
+          this.$emit('submitSchoolInfo', { type: 'add', data: this.form }) // 告诉父组件执行新增接口
         }
         // 重新获取所有数据
         this.$message.success('保存成功')

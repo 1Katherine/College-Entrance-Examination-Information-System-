@@ -36,6 +36,17 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
+    },
+    proxy: {
+      '/api': {
+        target: 'http://192.168.1.13:8080', // 后端接口
+        changeOrigin: true, // 是否跨域
+        pathRewrite: { // 如果接口本身没有/api需要通过pathRewrite来重写了地址
+          '^/api': '' // 这里理解成用‘/api’代替target里面的地址，组件中我们调接口时直接用/api代替
+          // 比如我要调用'http://0.0:300/user/add'，直接写‘/api/user/add’即可 代理后地址栏显示/
+
+        }
+      }
     }
     // before: require('./mock/mock-server.js')
   },
