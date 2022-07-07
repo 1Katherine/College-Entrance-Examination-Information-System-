@@ -11,14 +11,16 @@
       <!-- 使用 PageTools 公共组件实现通用栏 -->
       <page-tools :show-before="true">
         <template slot="before">
-          <el-button type="primary" @click="handleClick"
-            >新增门类录取分数线信息</el-button
-          >
+          <el-button
+            type="primary"
+            @click="handleClick"
+          >新增门类录取分数线信息</el-button>
         </template>
         <template slot="after">
-          <el-button type="warning" @click="$router.push('/import')"
-            >导入</el-button
-          >
+          <el-button
+            type="warning"
+            @click="$router.push('/import')"
+          >导入</el-button>
           <el-button type="danger" @click="exportData">导出</el-button>
         </template>
       </page-tools>
@@ -86,12 +88,16 @@
           <el-table-column width="200px" label="操作">
             <!-- 通过作用域插槽，通过点击行，获得父组件行的数据 -->
             <template slot-scope="{ row }">
-              <el-button size="small" type="primary" @click="handleClick(row)"
-                >编辑</el-button
-              >
-              <el-button size="small" type="danger" @click="handleDelete(row)"
-                >删除</el-button
-              >
+              <el-button
+                size="small"
+                type="primary"
+                @click="handleClick(row)"
+              >编辑</el-button>
+              <el-button
+                size="small"
+                type="danger"
+                @click="handleDelete(row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -130,7 +136,7 @@ var data = {
   lq_school_type_average_score: 431,
   lq_school_type_high_rank: 19023,
   lq_school_type_low_rank: 22395,
-  lq_school_type_p_line: 180,
+  lq_school_type_p_line: 180
 }
 var data1 = {
   lq_school_type_code: '5031',
@@ -143,7 +149,7 @@ var data1 = {
   lq_school_type_average_score: 431,
   lq_school_type_high_rank: 172989,
   lq_school_type_low_rank: 210294,
-  lq_school_type_p_line: 180,
+  lq_school_type_p_line: 180
 }
 var tableList = [
   data,
@@ -160,10 +166,10 @@ var tableList = [
   data1,
   data,
   data1,
-  data,
+  data
 ]
 export default {
-  name: 'typeScoreInfo',
+  name: 'TypeScoreInfo',
   components: {
     AddtypeScore
   },
@@ -182,15 +188,11 @@ export default {
     }
   },
   created() {
-    this.getSchoolList() // 获取所有数据
+    this.getSchoolListByPage() // 获取所有数据
   },
   methods: {
-    // getSchoolList() { // 根据页码获取当前所有数据
-    //   const { total, rows } = await getEmployeeList(this.page)
-    //   this.page.total = total
-    //   this.datalist = rows
-    // }
-    getSchoolList() { // 根据页码获取当前所有数据
+
+    getSchoolListByPage() { // 根据页码获取当前所有数据
       this.page.total = tableList.length // 修改分页组件的总数居数量
       this.datalist = tableList.slice((this.page.page - 1) * this.page.size,
         this.page.page * this.page.size) // 为表格附上第一页的数据
@@ -238,7 +240,7 @@ export default {
         平均分: 'lq_school_type_average_score',
         最高排名: 'lq_school_type_high_rank',
         最低排名: 'lq_school_type_low_rank',
-        省控线: 'lq_school_type_low_rank',
+        省控线: 'lq_school_type_low_rank'
       }
       var mydata = []
       for (var i = 0; i < this.datalist.length; i++) {

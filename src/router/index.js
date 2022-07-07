@@ -22,12 +22,15 @@ import subjectInfo from './modules/subjectInfo'
 import subjectScore from './modules/subjectScore'
 import typeScore from './modules/typeScore'
 import userInfo from './modules/userInfo'
-
+import geographicInfo from './modules/geographicInfo'
+import featureSchools from './modules/featureSchools'
+import rank from './modules/rank'
+import pclx from './modules/pclx'
 // 动态路由
-export const asyncRoutes = [schoolInfo,
+export const asyncRoutes = [userInfo, geographicInfo, schoolInfo,
   typeInfo, subjectInfo, subjectAdmissions,
   typeAdmissions, subjectScore, typeScore,
-  userInfo]
+  featureSchools, rank, pclx]
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html

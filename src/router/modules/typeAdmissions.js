@@ -20,7 +20,7 @@ export default {
       component: () => import('@/views/typeAdmissions'),
       meta: {
         title: '学校大类招生信息', // 左侧导航会读取我们的路由里的meta里面的title作为显示菜单名称
-        icon: 'school'
+        icon: 'discipline'
       }
     }
   ]

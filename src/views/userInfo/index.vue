@@ -15,7 +15,7 @@
 
       <!-- 信息显示表格 -->
       <el-card>
-        <el-table :data="datalist" style="width: 100%" stripe border>
+        <el-table v-loading="loading" :data="datalist" style="width: 100%" stripe border>
           <el-table-column fixed="" type="index" label="序号" width="100" />
           <el-table-column prop="create_time" label="创建日期" />
           <el-table-column prop="username" label="用户名" />
@@ -29,7 +29,7 @@
               <el-button
                 size="small"
                 type="primary"
-                @click="handleClick(row)"
+                @click="handleEdit(row)"
               >编辑</el-button>
               <el-button
                 size="small"
@@ -50,15 +50,14 @@
           @current-change="handleCurrentChange"
         />
       </el-row>
-      <EditUserInfo ref="editUserInfo" :form="form" :show-dialog.sync="showDialog" @cancelDialog="cancelDialog" />
+      <EditUserInfo ref="editUserInfo" :form="form" :show-dialog.sync="showDialog" @cancelDialog="cancelDialog" @edit="edit" />
     </div>
 
   </div>
 </template>
 
 <script>
-import { getAllUsers } from '@/api/user'
-import { getUserById } from '@/api/user'
+import { getAllUsers, getUserById, delUser, editUser } from '@/api/user'
 import EditUserInfo from './edit-user-info'
 export default {
   name: 'UserInfo',
@@ -69,10 +68,11 @@ export default {
     return {
       // 接收表格数据（在mounted中，获取数据，同时计算数据总数
       datalist: [],
+      loading: false, // 数据加载圈
       // 分页相关数据
       page: {
         currentPage: 1, // 当前页数
-        pageSize: 2, // 每一页放的数据个数
+        pageSize: 10, // 每一页放的数据个数
         total: 0 // 数据总数，需要在所有数据挂载完毕后才能在mounted中计算数据总数，
       },
       titleName: '新增',
@@ -85,19 +85,65 @@ export default {
   },
   methods: {
     async getUserList() { // 根据页码获取当前所有数据
+      this.loading = true
       const { data } = await getAllUsers(
         { currentPage: this.page.currentPage,
           pageSize: this.page.pageSize })
       this.page.total = data.data.total
       this.datalist = data.data.records
+      this.loading = false
     },
-    async handleClick(row) {
+    // 打开编辑用户信息的表单
+    async handleEdit(row) {
+      // 数据回显到表单
       const { data } = await getUserById(row.uid) // 根据本行的user.uid获取userInfo
       this.form = data.data
+      // 打开对话框
       this.showDialog = true
     },
-    handleDelete(row) {
+    // 编辑操作
+    async edit(value) {
+      try {
+      // 更新表单
+        const { data } = await editUser(value)
+        console.log('data', data)
+        if (data.code === 200) {
+          this.$message.success('更新成功！')
+        } else {
+          this.$message.warning(data.message)
+        }
 
+        // 关闭弹框
+        this.showDialog = false
+        // 更新数据
+        this.getUserList()
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    // 删除数据
+    async handleDelete(row) {
+      this.$prompt('请输入DELETE', '确认删除本行数据？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputValidator(value) {
+          return value === 'DELETE'
+        },
+        inputErrorMessage: '输入格式不正确，无法删除数据！'
+      }).then(async() => {
+        await delUser(row.uid) // 删除用户
+        this.$message({
+          type: 'success',
+          message: '删除数据成功'
+        })
+        this.getUserList() // 刷新数据
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消删除操作'
+        })
+      })
     },
     // 关闭新增数据窗口
     cancelDialog(value) {

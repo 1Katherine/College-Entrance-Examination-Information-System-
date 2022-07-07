@@ -25,6 +25,9 @@ import '@/permission' // permission control
 import Component from '@/components'
 Vue.use(Component) // 注册公共组件
 
+// 创建事件总线
+export var bus = new Vue()
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

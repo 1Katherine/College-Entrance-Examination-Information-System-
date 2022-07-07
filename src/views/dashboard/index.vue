@@ -7,7 +7,20 @@
 -->
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }} 后台管理系统</div>
+    <div class="dashboard-text">
+      <div style="font-size:20px">
+        <h4>已完成功能</h4>
+        <ul>
+          <li>右上角用户登出：返回登录页面</li>
+          <li />
+          <li />
+          <li />
+          <li />
+          <li />
+        </ul>
+      </div>
+
+    </div>
   </div>
 </template>
 

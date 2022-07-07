@@ -15,3 +15,37 @@ export function getProvinceByRegion(regionCode) {
   })
 }
 
+// 分页获取省份信息
+export function getProvincesByPage(data) {
+  return request({
+    url: '/geo/province/list',
+    method: 'post',
+    data
+  })
+}
+
+// 新增省份
+export function addProvince(data) {
+  return request({
+    url: '/geo/province/add',
+    method: 'post',
+    data
+  })
+}
+
+// 编辑省份
+export function editProvince(data) {
+  return request({
+    url: '/geo/province/update',
+    method: 'post',
+    data
+  })
+}
+
+// 删除省份
+export function delProvince(provinceCode) {
+  return request({
+    url: `/geo/province/delete/${provinceCode}`,
+    method: 'delete'
+  })
+}

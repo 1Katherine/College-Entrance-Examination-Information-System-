@@ -31,6 +31,7 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     // 代理配置 - 解决跨域问题（前端和后端接口不在同一域名下
+    host: '0.0.0.0',
     port: port,
     open: true,
     overlay: {
@@ -58,7 +59,9 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    // 在浏览器调试时看到源代码
+    devtool: 'source-map'
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload

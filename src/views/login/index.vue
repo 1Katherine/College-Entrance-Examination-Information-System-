@@ -51,21 +51,30 @@
           />
         </span>
       </el-form-item>
-      <div>
+
+      <!-- 记住密码 -->
+      <!-- <div>
         <el-checkbox
           v-model="check"
           style="padding:6px 5px 6px 15px"
         >记住密码</el-checkbox>
+      </div> -->
+
+      <div class="btn">
+        <el-button
+          class="loginBtn"
+          :loading="loading"
+          type="primary"
+          style="width: 45%; margin-bottom: 30px"
+          @click.native.prevent="handleLogin"
+        >登录</el-button>
+        <el-button
+          class="loginBtn"
+          :loading="loading"
+          style="width: 45%; margin-bottom: 30px"
+          @click.native.prevent="handleRegister"
+        >注册</el-button>
       </div>
-
-      <el-button
-        class="loginBtn"
-        :loading="loading"
-        type="primary"
-        style="width: 100%; margin-bottom: 30px"
-        @click.native.prevent="handleLogin"
-      >Login</el-button>
-
       <!-- 底部提示框：默认的账号和密码 -->
       <div class="tips">
         <span style="margin-right: 20px"> 账号: 张三 </span>
@@ -77,7 +86,7 @@
 
 <script>
 // import { validUsername } from '@/utils/validate'
-import { login } from '@/api/user'
+import { login, register } from '@/api/user'
 export default {
   name: 'Login',
   data() {
@@ -138,6 +147,7 @@ export default {
         this.$refs.password.focus()
       })
     },
+    // 用户登录
     handleLogin() {
       this.$refs.loginForm.validate(async(isOk) => {
         if (isOk) {
@@ -162,7 +172,35 @@ export default {
           }
         }
       })
+    },
+
+    // 注册用户
+
+    handleRegister() {
+      this.$refs.loginForm.validate(async(isOk) => {
+        if (isOk) {
+          try {
+            // 校验通过，登录
+            const { data } = await register({
+              username: this.loginForm.username,
+              password: this.loginForm.password
+            })
+            this.loading = true // 按钮显示loading
+            console.log(data)
+            if (data.code === 200) {
+              this.$message.success('注册成功，请登录！')
+            } else {
+              this.$message.warning(data.message)
+            }
+          } catch (error) {
+            // 登录不通过，弹框
+          } finally {
+            this.loading = false // 无论是否通过，都关闭loading
+          }
+        }
+      })
     }
+
     //   this.$refs.loginForm.validate((valid) => {
     //     if (valid) {
     //       this.loading = true
@@ -292,9 +330,14 @@ $light_gray: #eee;
     font-size: 18px;
   }
 
-  // 修改登陆按钮的字体
-  .loginBtn {
-    font-size: 20px;
+  .btn {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    // 修改登陆按钮的字体
+    .loginBtn {
+      font-size: 20px;
+    }
   }
 
   .title-container {

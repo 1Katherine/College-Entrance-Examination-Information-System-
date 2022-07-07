@@ -24,7 +24,7 @@
       </el-form-item>
 
       <el-form-item label="区域">
-        <el-select v-model="form.school_region" placeholder="请选择" @change="changeRegion" @focus="regionFocus">
+        <el-select v-model="form.school_region" class="input_box" placeholder="请选择" @change="changeRegion" @focus="regionFocus">
           <el-option
             v-for="item in region"
             :key="item.value"
@@ -34,7 +34,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="省份">
-        <el-select v-model="form.school_province" class="input_box" @focus="provinceFocus" @change="changeProvince">
+        <el-select v-model="form.school_province" class="input_box" @change="changeProvince" @focus="getProvinceByRegion">
           <el-option
             v-for="item in province"
             :key="item.value"
@@ -59,8 +59,7 @@
           class="input_box"
           placeholder="请选择"
         >
-          <el-option label="是" value="1" />
-          <el-option label="否" value="0" />
+          <el-option v-for="item in school_211" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="是否985">
@@ -69,8 +68,7 @@
           class="input_box"
           placeholder="请选择"
         >
-          <el-option label="是" value="1" />
-          <el-option label="否" value="0" />
+          <el-option v-for="item in school_985" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="隶属单位" prop="school_belong">
@@ -159,8 +157,13 @@ export default {
       },
       region: [],
       province: [],
-      city: []
+      city: [],
+      school_211: [{ label: '是', value: 1 }, { label: '否', value: 0 }],
+      school_985: [{ label: '是', value: 1 }, { label: '否', value: 0 }]
     }
+  },
+  created() {
+    this.regionFocus()
   },
   methods: {
     // 获取地理位置（区域、省份、城市）
@@ -176,8 +179,15 @@ export default {
       })
       this.region = regionsArr
     },
-    async provinceFocus() {
-      const rid = this.form.school_region
+    async getProvinceByRegion() {
+      var rid
+      const region_label = this.form.school_region
+      this.region.map(function(item, index, array) {
+        if (item.label === region_label) {
+          rid = item.value
+        }
+      })
+
       if (rid === '') {
         this.$message.warning('请先选择区域，再选择省份')
       } else {
@@ -193,13 +203,18 @@ export default {
           })
           this.province = provinceArr
         } catch (error) {
-          this.$message.warning(error)
+          console.log(error)
         }
       }
     },
-    async cityFocus() {
-      const pid = this.form.school_province
-      console.log('pid', pid)
+    async getCityByProvince() {
+      var pid
+      const pro_label = this.form.school_province
+      this.province.map(function(item, index, array) {
+        if (item.label === pro_label) {
+          pid = item.value
+        }
+      })
       if (pid === '') {
         this.$message.warning('请先选择省份，再选择城市')
       } else {
@@ -215,16 +230,28 @@ export default {
           })
           this.city = cityArr
         } catch (error) {
-          this.$message.warning(error)
+          console.log(error)
         }
       }
     },
     changeRegion() {
       this.form.school_province = ''
       this.form.school_city = ''
+      this.getProvinceByRegion()
     },
     changeProvince() {
       this.form.school_city = ''
+      this.getCityByProvince()
+    },
+    async cityFocus() {
+      const pid = this.form.school_province
+      console.log('pid', pid)
+      if (pid === '' || typeof (pid) === 'undefined') {
+        this.$message.warning('请先选择省份，再选择城市')
+        // this.city = []
+      } else {
+        await this.getCityByProvince()
+      }
     },
     btnCancel() {
       this.$refs.form.resetFields() // 移除校验规则
@@ -240,7 +267,6 @@ export default {
           this.$emit('submitSchoolInfo', { type: 'add', data: this.form }) // 告诉父组件执行新增接口
         }
         // 重新获取所有数据
-        this.$message.success('保存成功')
         this.$emit('cancelDialog', false) // 告诉父节点关闭弹窗
       } catch (error) {
         alert(error) // 表单校验不通过

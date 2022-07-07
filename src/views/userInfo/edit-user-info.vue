@@ -8,7 +8,7 @@
       :model="form"
     >
       <el-form-item label="用户名" prop="username">
-        <el-input v-model="form.username" class="input_box" />
+        <el-input v-model="form.username" class="input_box" :disabled="true" />
       </el-form-item>
       <el-form-item label="密码" prop="password">
         <el-input v-model="form.password" class="input_box" />
@@ -45,9 +45,6 @@ export default {
     return {
       // 表单验证
       rules: {
-        username: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
-        ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' }
         ]
@@ -65,13 +62,9 @@ export default {
       try {
         await this.$refs.form.validate() // 表单校验通过才会继续往下执行，否则跳到catch
         // 编辑数据业务
-        // await 更新数据接口(id)
-
-        // 重新获取所有数据
-        this.$message.success('保存成功')
-        this.$emit('cancelDialog', false) // 告诉父节点关闭弹窗
+        this.$emit('edit', this.form)
       } catch (error) {
-        alert(error) // 表单校验不通过
+        console.log('表单校验不通过') // 表单校验不通过
       }
     }
   }
