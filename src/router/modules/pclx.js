@@ -26,30 +26,6 @@ export default {
         title: '招生类型',
         icon: 'zslx'
       }
-    },
-    {
-      path: 'discipline',
-      component: () => import('@/views/pclx/discipline'),
-      meta: {
-        title: '学科门类',
-        icon: 'other'
-      }
-    },
-    {
-      path: 'subject',
-      component: () => import('@/views/pclx/subject'),
-      meta: {
-        title: '一级学科',
-        icon: 'other'
-      }
-    },
-    {
-      path: 'major',
-      component: () => import('@/views/pclx/major'),
-      meta: {
-        title: '专业信息',
-        icon: 'other'
-      }
     }
   ]
 }

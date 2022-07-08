@@ -68,16 +68,26 @@
           <el-form-item label="评选年份" prop="qj_year">
             <el-input v-model="form.qj_year" class="input_box" />
           </el-form-item>
-          <el-form-item label="学校" prop="qj_school">
-            <el-select v-model="form.qj_school" class="input_box">
-              <el-option
-                v-for="item in schools"
-                :key="item.school_id"
-                :label="item.school_name"
-                :value="item.school_id"
-              />
-            </el-select>
+
+          <!-- （表单显示的是学校名称）请求传入的是学校编号 -->
+          <el-form-item v-if="hidden" label="学校id">
+            <el-input
+              v-if="hidden"
+              v-model="form.qj_school"
+              class="input_box"
+            />
           </el-form-item>
+          <el-form-item label="学校" prop="qj_schoolName">
+            <el-autocomplete
+              v-model="form.qj_schoolName"
+              class="inline-input input_box"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入内容"
+              clearable
+              @select="handleSelect"
+            />
+          </el-form-item>
+
         </el-form>
         <!-- 弹框底部 -->
         <template v-slot:footer>
@@ -120,19 +130,20 @@ export default {
         qj_year: [
           { required: true, message: '请填写评选日期', trigger: 'blur' }
         ],
-        qj_school: [
+        qj_schoolName: [
           { required: true, message: '请选择学校', trigger: 'change' }
         ]
       },
+      hidden: false, // 隐藏输入框
       // 表单select中显示的所有学校列表
       schools: [],
       titleName: '新增数据', // 控制表单对话框的标题显示
       showDialog: false // 控制表单对话框的显示
     }
   },
-  created() {
-    this.getQiangJiByPage()
-    this.getAllSchoolList()
+  async created() {
+    await this.getAllSchoolList()
+    await this.getQiangJiByPage()
   },
   methods: {
     // 分页显示所有双一流高校
@@ -148,6 +159,28 @@ export default {
       const { data } = await getAllSchoolList()
       this.schools = data.data
     },
+    // 表单输入框建议函数
+    querySearch(queryString, callback) {
+      var schools = this.schools
+      var results = queryString ? schools.filter(this.createFilter(queryString)) : schools
+      // 结果需要有value字段
+      results.forEach((item) => {
+        item.value = item.school_name
+      })
+      // 调用 callback 返回建议列表的数据
+      callback(results)
+    },
+    // 输出狂建议匹配
+    createFilter(queryString) {
+      return (schools) => {
+        return (schools.school_name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1)
+      }
+    },
+    // 获取学校名对应的学校id
+    handleSelect(item) {
+      this.form.qj_school = item.school_id
+    },
+
     // 点击页数跳转到对应页面，显示对应页面的高校信息
     handleCurrentChange(newPage) {
       this.page.currentPage = newPage // 修改当前页
@@ -160,13 +193,13 @@ export default {
       this.$refs.form.resetFields()
       this.form.qj_code = ''
       this.form.qj_year = ''
-      this.form.qj_school = ''
+      this.form.qj_schoolName = ''
     },
     // 点击新增/编辑按钮，显示表单
     handleClick(row) {
       if (row.qj_code) {
         this.titleName = '编辑强基计划信息'
-        this.form = { 'qj_code': row.qj_code, 'qj_school': row.qj_school, 'qj_year': row.qj_year } // 数据回显
+        this.form = { 'qj_code': row.qj_code, 'qj_school': row.qj_school, 'qj_schoolName': row.qj_schoolName, 'qj_year': row.qj_year } // 数据回显
       } else {
         this.titleName = '新增强基计划信息'
       }
@@ -180,6 +213,7 @@ export default {
     },
     // 保存表单信息（新增/删除）
     async onSave() {
+      console.log(this.form)
       // 表单验证成功才会往下执行
       try {
         await this.$refs.form.validate()
@@ -210,6 +244,7 @@ export default {
       this.form.qj_code = ''
       this.form.qj_year = ''
       this.form.qj_school = ''
+      this.form.qj_schoolName = ''
       // 关闭对话框
       this.showDialog = false
     }

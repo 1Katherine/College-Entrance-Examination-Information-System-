@@ -16,7 +16,7 @@ export default {
       component: () => import('@/views/featureSchools/dual'),
       meta: {
         title: '双一流高校', // 左侧导航会读取我们的路由里的meta里面的title作为显示菜单名称
-        icon: 'school'
+        icon: 'dual'
       }
     },
     {
@@ -24,7 +24,7 @@ export default {
       component: () => import('@/views/featureSchools/shuangGao'),
       meta: {
         title: '双高计划高校',
-        icon: 'school'
+        icon: 'sg'
       }
     },
     {
@@ -32,7 +32,7 @@ export default {
       component: () => import('@/views/featureSchools/qiangJi'),
       meta: {
         title: '强基计划高校',
-        icon: 'school'
+        icon: 'qj'
       }
     }
   ]

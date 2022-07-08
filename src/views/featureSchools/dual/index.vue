@@ -73,16 +73,26 @@
           <el-form-item label="评选年份" prop="dual_year">
             <el-input v-model="form.dual_year" class="input_box" />
           </el-form-item>
-          <el-form-item label="学校" prop="dual_school">
-            <el-select v-model="form.dual_school" class="input_box">
-              <el-option
-                v-for="item in schools"
-                :key="item.school_id"
-                :label="item.school_name"
-                :value="item.school_id"
-              />
-            </el-select>
+
+          <!-- （表单显示的是学校名称）请求传入的是学校编号 -->
+          <el-form-item v-if="hidden" label="学校id">
+            <el-input
+              v-if="hidden"
+              v-model="form.dual_school"
+              class="input_box"
+            />
           </el-form-item>
+          <el-form-item label="学校" prop="dual_schoolName">
+            <el-autocomplete
+              v-model="form.dual_schoolName"
+              class="inline-input input_box"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入内容"
+              clearable
+              @select="handleSelect"
+            />
+          </el-form-item>
+
         </el-form>
         <!-- 弹框底部 -->
         <template v-slot:footer>
@@ -124,10 +134,11 @@ export default {
         dual_year: [
           { required: true, message: '请填写评选日期', trigger: 'blur' }
         ],
-        dual_school: [
+        dual_schoolName: [
           { required: true, message: '请选择学校', trigger: 'change' }
         ]
       },
+      hidden: false, // 隐藏输入框
       // 表单select中显示的所有学校列表
       schools: [],
       titleName: '新增数据', // 控制表单对话框的标题显示
@@ -152,6 +163,28 @@ export default {
       const { data } = await getAllSchoolList()
       this.schools = data.data
     },
+    // 表单输入框建议函数
+    querySearch(queryString, callback) {
+      var schools = this.schools
+      var results = queryString ? schools.filter(this.createFilter(queryString)) : schools
+      // 结果需要有value字段
+      results.forEach((item) => {
+        item.value = item.school_name
+      })
+      // 调用 callback 返回建议列表的数据
+      callback(results)
+    },
+    // 输出狂建议匹配
+    createFilter(queryString) {
+      return (schools) => {
+        return (schools.school_name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1)
+      }
+    },
+    // 获取学校名对应的学校id
+    handleSelect(item) {
+      this.form.dual_school = item.school_id
+    },
+
     // 点击页数跳转到对应页面，显示对应页面的高校信息
     handleCurrentChange(newPage) {
       this.page.currentPage = newPage // 修改当前页
@@ -174,13 +207,14 @@ export default {
       this.$refs.form.resetFields()
       this.form.dual_year = ''
       this.form.dual_school = ''
+      this.form.dual_schoolName = ''
     },
     // 点击新增/编辑按钮，显示表单
     handleClick(row) {
       if (row.dual_school) {
         // 打开编辑对话框
         this.titleName = '编辑双一流高校信息'
-        this.form = { 'dual_code': row.dual_code, 'dual_school': row.dual_school, 'dual_year': row.dual_year } // 数据回显
+        this.form = { 'dual_code': row.dual_code, 'dual_school': row.dual_school, 'dual_year': row.dual_year, 'dual_schoolName': row.dual_schoolName } // 数据回显
       } else {
         // 打开新增对话框
         this.titleName = '新增双一流高校信息'
@@ -192,7 +226,6 @@ export default {
       try {
       // 只有校验成功才会执行下面的内容
         await this.$refs.form.validate()
-        console.log('this.form', this.form)
         if (this.titleName.indexOf('新增') !== -1) {
           // 新增数据
           const { data } = await addDual(this.form)
@@ -213,6 +246,9 @@ export default {
         this.showDialog = false // 关闭对话框
         // 移除表单校验规则和数据
         this.$refs.form.resetFields()
+        this.form.dual_year = ''
+        this.form.dual_school = ''
+        this.form.dual_schoolName = ''
         // 刷新表格数据
         this.getDualsByPage()
       } catch (err) {

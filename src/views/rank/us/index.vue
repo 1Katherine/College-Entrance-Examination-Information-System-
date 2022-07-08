@@ -52,26 +52,26 @@
     >
       <!-- 具名插槽传特定的内容 -->
       <template #dialog>
-        <el-form-item label="排名编号" prop="rk_code">
-          <el-input v-model="form.rk_code" class="input_box" :disabled="true" />
+        <el-form-item label="排名编号" prop="us_code">
+          <el-input v-model="form.us_code" class="input_box" :disabled="true" />
         </el-form-item>
-        <el-form-item label="排名" prop="rk_rank">
-          <el-input v-model="form.rk_rank" class="input_box" />
+        <el-form-item label="排名" prop="us_rank">
+          <el-input v-model="form.us_rank" class="input_box" />
         </el-form-item>
-        <el-form-item label="评选年份" prop="rk_year">
-          <el-input v-model="form.rk_year" class="input_box" />
+        <el-form-item label="评选年份" prop="us_year">
+          <el-input v-model="form.us_year" class="input_box" />
         </el-form-item>
         <!-- （表单显示的是学校名称）请求传入的是学校编号 -->
         <el-form-item v-if="hidden" label="学校id">
           <el-input
             v-if="hidden"
-            v-model="form.rk_school"
+            v-model="form.us_school"
             class="input_box"
           />
         </el-form-item>
-        <el-form-item label="学校" prop="rk_schoolName">
+        <el-form-item label="学校" prop="us_schoolName">
           <el-autocomplete
-            v-model="form.rk_schoolName"
+            v-model="form.us_schoolName"
             class="inline-input input_box"
             :fetch-suggestions="querySearch"
             placeholder="请输入内容"
@@ -90,9 +90,9 @@
 import Table from '@/components/common/table.vue'
 import AddDialog from '@/components/common/add-dialog.vue'
 import { getAllSchoolList } from '@/api/school'
-import { getRksByPage, addRk, editRk, delRk } from '@/api/rank/rk'
+import { getUssByPage, addUs, editUs, delUs } from '@/api/rank/us'
 export default {
-  name: 'RK',
+  name: 'US',
   components: {
     Table,
     AddDialog
@@ -116,13 +116,13 @@ export default {
       showDialog: false,
       form: {},
       rules: {
-        rk_rank: [
-          { required: true, message: '请填入学校软科排名', trigger: 'blur' }
+        us_rank: [
+          { required: true, message: '请填入学校US排名', trigger: 'blur' }
         ],
-        rk_year: [
+        us_year: [
           { required: true, message: '请填入排名年份', trigger: 'blur' }
         ],
-        rk_schoolName: [
+        us_schoolName: [
           { required: true, message: '请选择学校', trigger: 'change' }
         ]
       },
@@ -133,34 +133,34 @@ export default {
     // 获取所有学校信息
     await this.getAllSchoolList()
     // 获取排名信息
-    await this.getRksByPage()
+    await this.getUssByPage()
   },
   methods: {
     // 分页查询所有信息
-    async getRksByPage() {
+    async getUssByPage() {
       try {
         this.loading = true
-        const { data } = await getRksByPage(this.page)
+        const { data } = await getUssByPage(this.page)
         this.dataList = data.data.records
         this.page.total = data.data.total
 
         // 根据学校编号获取学校名称
         this.dataList.forEach((item) => {
-          const shool_id = item.rk_school
+          const shool_id = item.us_school
           // 遍历所有学校
           this.dataList.forEach((school) => {
             if (school.school_id === shool_id) {
-              item.rk_schoolName = school.school_name
+              item.us_schoolName = school.school_name
             }
           })
         })
 
         this.keys = [
-          // { label: '序号', value: 'rk_code', width: '150px' },
-          { label: '排名', value: 'rk_rank', width: '150px' },
-          // { label: '学校id', value: 'rk_school', width: '150px' },
-          { label: '学校名称', value: 'rk_schoolName', width: '300px' },
-          { label: '评选年份', value: 'rk_year', width: '150px' }]
+          // { label: '序号', value: 'us_code', width: '150px' },
+          { label: '排名', value: 'us_rank', width: '150px' },
+          // { label: '学校id', value: 'us_school', width: '150px' },
+          { label: '学校名称', value: 'us_schoolName', width: '300px' },
+          { label: '评选年份', value: 'us_year', width: '150px' }]
 
         this.loading = false
       } catch (err) {
@@ -172,6 +172,7 @@ export default {
       const { data } = await getAllSchoolList()
       this.schools = data.data
     },
+
     // 表单输入框建议函数
     querySearch(queryString, callback) {
       var schools = this.schools
@@ -191,9 +192,8 @@ export default {
     },
     // 获取学校名对应的学校id
     handleSelect(item) {
-      this.form.rk_school = item.school_id
+      this.form.us_school = item.school_id
     },
-
     // 换页操作
     handleCurrentChange(newPage) {
       this.page.currentPage = newPage
@@ -201,7 +201,7 @@ export default {
     },
     // 打开对话框
     async handleClick(row) {
-      if (row.rk_code) {
+      if (row.us_code) {
         // 编辑
         this.titleName = '编辑排名信息'
         this.form = row
@@ -224,14 +224,14 @@ export default {
     async onSave() {
       try {
         if (this.titleName.indexOf('新增') !== -1) {
-          const { data } = await addRk(this.form)
+          const { data } = await addUs(this.form)
           if (data.code === 200) {
             this.$message.success('保存成功！')
           } else {
             this.$message.error(data.message)
           }
         } else {
-          const { data } = await editRk(this.form)
+          const { data } = await editUs(this.form)
           if (data.code === 200) {
             this.$message.success('保存成功！')
           } else {
@@ -243,13 +243,13 @@ export default {
       }
 
       // 刷新数据
-      this.getRksByPage()
+      this.getUssByPage()
       // 关闭对话框
       this.showDialog = false
       // 清空子组件表单校验
       this.$refs.dialog.$refs.form.resetFields()
       // 清空数据
-      this.form = { 'rk_code': '', 'rk_rank': '', 'rk_school': '', 'rk_schoolName': '', 'rk_year': '' }
+      this.form = { 'us_code': '', 'us_rank': '', 'us_school': '', 'us_schoolName': '', 'us_year': '' }
     },
 
     async handleDelete(row) {
@@ -261,12 +261,12 @@ export default {
         },
         inputErrorMessage: '输入格式不正确，无法删除数据！'
       }).then(async() => {
-        await delRk(row.rk_code)
+        await delUs(row.us_code)
         this.$message({
           type: 'success',
           message: '删除数据成功'
         })
-        this.getRksByPage() // 刷新数据
+        this.getUssByPage() // 刷新数据
       }).catch(() => {
         this.$message({
           type: 'info',

@@ -14,22 +14,16 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 // 引入动态路由
-import subjectAdmissions from './modules/subjectAdmissions'
-import typeAdmissions from './modules/typeAdmissions'
 import schoolInfo from './modules/schoolnfo'
-import typeInfo from './modules/typeInfo'
-import subjectInfo from './modules/subjectInfo'
-import subjectScore from './modules/subjectScore'
-import typeScore from './modules/typeScore'
 import userInfo from './modules/userInfo'
 import geographicInfo from './modules/geographicInfo'
 import featureSchools from './modules/featureSchools'
 import rank from './modules/rank'
 import pclx from './modules/pclx'
+import subjectBasic from './modules/subjectBasic'
+
 // 动态路由
-export const asyncRoutes = [userInfo, geographicInfo, schoolInfo,
-  typeInfo, subjectInfo, subjectAdmissions,
-  typeAdmissions, subjectScore, typeScore,
+export const asyncRoutes = [userInfo, geographicInfo, schoolInfo, subjectBasic,
   featureSchools, rank, pclx]
 /**
  * Note: sub-menu only appear when route children.length >= 1

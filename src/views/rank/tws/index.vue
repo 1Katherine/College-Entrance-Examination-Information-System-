@@ -52,26 +52,26 @@
     >
       <!-- 具名插槽传特定的内容 -->
       <template #dialog>
-        <el-form-item label="排名编号" prop="rk_code">
-          <el-input v-model="form.rk_code" class="input_box" :disabled="true" />
+        <el-form-item label="排名编号" prop="tws_code">
+          <el-input v-model="form.tws_code" class="input_box" :disabled="true" />
         </el-form-item>
-        <el-form-item label="排名" prop="rk_rank">
-          <el-input v-model="form.rk_rank" class="input_box" />
+        <el-form-item label="排名" prop="tws_rank">
+          <el-input v-model="form.tws_rank" class="input_box" />
         </el-form-item>
-        <el-form-item label="评选年份" prop="rk_year">
-          <el-input v-model="form.rk_year" class="input_box" />
+        <el-form-item label="评选年份" prop="tws_year">
+          <el-input v-model="form.tws_year" class="input_box" />
         </el-form-item>
         <!-- （表单显示的是学校名称）请求传入的是学校编号 -->
         <el-form-item v-if="hidden" label="学校id">
           <el-input
             v-if="hidden"
-            v-model="form.rk_school"
+            v-model="form.tws_school"
             class="input_box"
           />
         </el-form-item>
-        <el-form-item label="学校" prop="rk_schoolName">
+        <el-form-item label="学校" prop="tws_schoolName">
           <el-autocomplete
-            v-model="form.rk_schoolName"
+            v-model="form.tws_schoolName"
             class="inline-input input_box"
             :fetch-suggestions="querySearch"
             placeholder="请输入内容"
@@ -90,9 +90,9 @@
 import Table from '@/components/common/table.vue'
 import AddDialog from '@/components/common/add-dialog.vue'
 import { getAllSchoolList } from '@/api/school'
-import { getRksByPage, addRk, editRk, delRk } from '@/api/rank/rk'
+import { getTwssByPage, addTws, editTws, delTws } from '@/api/rank/tws'
 export default {
-  name: 'RK',
+  name: 'TWS',
   components: {
     Table,
     AddDialog
@@ -116,13 +116,13 @@ export default {
       showDialog: false,
       form: {},
       rules: {
-        rk_rank: [
-          { required: true, message: '请填入学校软科排名', trigger: 'blur' }
+        tws_rank: [
+          { required: true, message: '请填入学校泰晤士排名', trigger: 'blur' }
         ],
-        rk_year: [
+        tws_year: [
           { required: true, message: '请填入排名年份', trigger: 'blur' }
         ],
-        rk_schoolName: [
+        tws_schoolName: [
           { required: true, message: '请选择学校', trigger: 'change' }
         ]
       },
@@ -133,34 +133,34 @@ export default {
     // 获取所有学校信息
     await this.getAllSchoolList()
     // 获取排名信息
-    await this.getRksByPage()
+    await this.getTwssByPage()
   },
   methods: {
     // 分页查询所有信息
-    async getRksByPage() {
+    async getTwssByPage() {
       try {
         this.loading = true
-        const { data } = await getRksByPage(this.page)
+        const { data } = await getTwssByPage(this.page)
         this.dataList = data.data.records
         this.page.total = data.data.total
 
         // 根据学校编号获取学校名称
         this.dataList.forEach((item) => {
-          const shool_id = item.rk_school
+          const shool_id = item.tws_school
           // 遍历所有学校
           this.dataList.forEach((school) => {
             if (school.school_id === shool_id) {
-              item.rk_schoolName = school.school_name
+              item.tws_schoolName = school.school_name
             }
           })
         })
 
         this.keys = [
-          // { label: '序号', value: 'rk_code', width: '150px' },
-          { label: '排名', value: 'rk_rank', width: '150px' },
-          // { label: '学校id', value: 'rk_school', width: '150px' },
-          { label: '学校名称', value: 'rk_schoolName', width: '300px' },
-          { label: '评选年份', value: 'rk_year', width: '150px' }]
+          // { label: '序号', value: 'tws_code', width: '150px' },
+          { label: '排名', value: 'tws_rank', width: '150px' },
+          // { label: '学校id', value: 'tws_school', width: '150px' },
+          { label: '学校名称', value: 'tws_schoolName', width: '300px' },
+          { label: '评选年份', value: 'tws_year', width: '150px' }]
 
         this.loading = false
       } catch (err) {
@@ -191,9 +191,8 @@ export default {
     },
     // 获取学校名对应的学校id
     handleSelect(item) {
-      this.form.rk_school = item.school_id
+      this.form.tws_school = item.school_id
     },
-
     // 换页操作
     handleCurrentChange(newPage) {
       this.page.currentPage = newPage
@@ -201,7 +200,7 @@ export default {
     },
     // 打开对话框
     async handleClick(row) {
-      if (row.rk_code) {
+      if (row.tws_code) {
         // 编辑
         this.titleName = '编辑排名信息'
         this.form = row
@@ -224,14 +223,14 @@ export default {
     async onSave() {
       try {
         if (this.titleName.indexOf('新增') !== -1) {
-          const { data } = await addRk(this.form)
+          const { data } = await addTws(this.form)
           if (data.code === 200) {
             this.$message.success('保存成功！')
           } else {
             this.$message.error(data.message)
           }
         } else {
-          const { data } = await editRk(this.form)
+          const { data } = await editTws(this.form)
           if (data.code === 200) {
             this.$message.success('保存成功！')
           } else {
@@ -243,13 +242,13 @@ export default {
       }
 
       // 刷新数据
-      this.getRksByPage()
+      this.getTwssByPage()
       // 关闭对话框
       this.showDialog = false
       // 清空子组件表单校验
       this.$refs.dialog.$refs.form.resetFields()
       // 清空数据
-      this.form = { 'rk_code': '', 'rk_rank': '', 'rk_school': '', 'rk_schoolName': '', 'rk_year': '' }
+      this.form = { 'tws_code': '', 'tws_rank': '', 'tws_school': '', 'tws_schoolName': '', 'tws_year': '' }
     },
 
     async handleDelete(row) {
@@ -261,12 +260,12 @@ export default {
         },
         inputErrorMessage: '输入格式不正确，无法删除数据！'
       }).then(async() => {
-        await delRk(row.rk_code)
+        await delTws(row.tws_code)
         this.$message({
           type: 'success',
           message: '删除数据成功'
         })
-        this.getRksByPage() // 刷新数据
+        this.getTwssByPage() // 刷新数据
       }).catch(() => {
         this.$message({
           type: 'info',

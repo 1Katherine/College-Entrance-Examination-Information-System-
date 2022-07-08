@@ -42,8 +42,8 @@
       >
         <!-- 具名插槽传特定的内容 -->
         <template #dialog>
-          <el-form-item label="专业编号" prop="major_code">
-            <el-input v-model="form.major_code" class="input_box" :disabled="titleName.indexOf('新增')!==-1 ? false : true" />
+          <el-form-item label="专业序号" prop="major_code">
+            <el-input v-model="form.major_code" class="input_box" :disabled="true" />
           </el-form-item>
           <el-form-item label="专业id" prop="major_id">
             <el-input v-model="form.major_id" class="input_box" :disabled="titleName.indexOf('新增')!==-1 ? false : true" />
@@ -95,7 +95,7 @@ export default {
       showDialog: false,
       form: {},
       rules: {
-
+        major_id: [{ required: true, message: '请填写专业代码', trigger: 'blur' }],
         major_name: [
           { required: true, message: '请填写专业名称', trigger: 'blur' }
         ],
@@ -121,19 +121,18 @@ export default {
         const { data } = await getMajorsByPage(this.page)
         this.page.total = data.data.total
         this.dataList = data.data
-        console.log('this.dataList', this.dataList)
         // 获取一级学科id对应的中文名
         this.dataList.forEach((item) => {
           item.subject_name = this.subject_id_name[item.major_subject]
         })
 
         this.keys = [
-          { label: '专业编号', value: 'major_code', width: '150px' },
+          { label: '专业序号', value: 'major_code', width: '150px' },
           { label: '创建日期', value: 'create_time', width: '300px' },
           { label: '更新日期', value: 'update_time', width: '300px' },
           { label: '专业id', value: 'major_id', width: '150px' },
-          { label: '专业名称', value: 'major_name', width: '300px' },
-          { label: '所属一级学科', value: 'subject_name', width: '150px' }]
+          { label: '专业名称', value: 'major_name', width: '250px' },
+          { label: '所属一级学科', value: 'subject_name', width: '250px' }]
       } catch (err) {
         console.log(err)
       }
@@ -141,14 +140,11 @@ export default {
     // 获取所有一级学科
     async getAllSubjects() {
       const { data } = await getSubjectsByPage({ currentPage: 1, pageSize: 1000000 })
-      this.allSubjects = data.data
-      console.log('所有一级学科', this.allSubjects)
+      this.allSubjects = data.data.records
       //   将一级学科id与中文名对应
       this.allSubjects.forEach((item) => {
         this.subject_id_name[item.subject_id] = item.subject_name
       })
-
-      console.log('this.subject_id_name', this.subject_id_name)
     },
     // 换页操作
     handleCurrentChange(newPage) {
@@ -174,7 +170,7 @@ export default {
       // 清空子组件表单校验
       this.$refs.dialog.$refs.form.resetFields()
       // 清空数据
-      this.form = { 'major_id': '', 'major_code': '', 'major_name': '', 'major_subject': '' }
+      this.form = { 'major_code': '', 'major_id': '', 'major_name': '', 'major_subject': '' }
     },
     async onSave() {
       try {
@@ -199,13 +195,13 @@ export default {
       }
 
       // 刷新数据
-      this.getSubjectsByPage()
+      this.getMajorsByPage()
       // 关闭对话框
       this.showDialog = false
       // 清空子组件表单校验
       this.$refs.dialog.$refs.form.resetFields()
       // 清空数据
-      this.form = { 'major_id': '', 'major_code': '', 'major_name': '', 'major_subject': '' }
+      this.form = { 'major_code': '', 'major_id': '', 'major_name': '', 'major_subject': '' }
     },
     async handleDelete(row) {
       this.$prompt('请输入DELETE', '确认删除本行数据？', {
@@ -221,7 +217,7 @@ export default {
           type: 'success',
           message: '删除数据成功'
         })
-        this.getSubjectsByPage() // 刷新数据
+        this.getMajorsByPage() // 刷新数据
       }).catch(() => {
         this.$message({
           type: 'info',

@@ -9,15 +9,39 @@
   <div class="dashboard-container">
     <div class="dashboard-text">
       <div style="font-size:20px">
-        <h4>已完成功能</h4>
-        <ul>
-          <li>右上角用户登出：返回登录页面</li>
-          <li />
-          <li />
-          <li />
-          <li />
-          <li />
-        </ul>
+        <span>今日待完成功能</span><hr>
+        <ol>
+          <li>搜索框建议：将目前使用下拉框来修改学校或选择学校的操作，改成输入框根据输入字符给出下拉建议或提示 ✔
+            <ul>
+              <li> 高校排行榜表单 ✔</li>
+              <li> 特色院校表单 ✔ </li>
+              <li> 学校信息表单 ✔</li>
+            </ul>
+          </li>
+          <li>招生类型和批次管理 ✔</li>
+          <li>排名信息管理 ✔</li>
+          <li>
+            改变左侧菜单栏布局："学科信息管理" ✔
+            <ul>
+              <li>学科门类</li>
+              <li>一级学科</li>
+              <li>专业信息</li>
+            </ul>
+          </li>
+          <li>
+            新增左侧菜单栏布局："学校信息管理" ✔
+            <ul>
+              <li>学校基本信息</li>
+              <li>学校学科门类</li>
+              <li>学校一级学科</li>
+              <li>学校专业信息</li>
+              <li>学校招生信息</li>
+              <li>学校历年录取分数线</li>
+            </ul>
+          </li>
+
+        </ol>
+
       </div>
 
     </div>

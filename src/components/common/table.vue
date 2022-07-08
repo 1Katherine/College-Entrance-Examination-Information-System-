@@ -6,6 +6,10 @@
         <template v-for="(item,index) in keys">
           <el-table-column :key="index" :prop="item.value" :label="item.label" :width="item.width" />
         </template>
+
+        <!-- 具名插槽 -->
+        <slot name="table-item-right" />
+
         <el-table-column label="操作">
           <!-- 通过作用域插槽，通过点击行，获得父组件行的数据 -->
           <template slot-scope="{ row }">
@@ -21,6 +25,7 @@
             >删除</el-button>
           </template>
         </el-table-column>
+
       </el-table>
     </el-card>
     <!-- 分页组件 -->
