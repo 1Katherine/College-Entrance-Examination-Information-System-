@@ -14,7 +14,7 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 // 引入动态路由
-import schoolInfo from './modules/schoolnfo'
+import schoolInfo from './modules/schoolBasic'
 import userInfo from './modules/userInfo'
 import geographicInfo from './modules/geographicInfo'
 import featureSchools from './modules/featureSchools'

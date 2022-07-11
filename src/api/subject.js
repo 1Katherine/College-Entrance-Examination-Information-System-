@@ -10,6 +10,14 @@ export function getSubjectsByPage(data) {
   })
 }
 
+// 根据discipline_id查询所有一级学科
+export function getSubjectsByDisciplineId(disciplineId) {
+  return request({
+    url: `/subject/listAll/${disciplineId}`,
+    method: 'post'
+  })
+}
+
 // 新增信息
 export function addSubject(data) {
   return request({
